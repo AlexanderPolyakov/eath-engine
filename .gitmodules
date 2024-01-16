@@ -1,0 +1,18 @@
+[submodule "3rdParty/bgfx"]
+	path = 3rdParty/bgfx
+	url = git@github.com:bkaradzic/bgfx.git
+[submodule "3rdParty/bx"]
+	path = 3rdParty/bx
+	url = git@github.com:bkaradzic/bx.git
+[submodule "3rdParty/bimg"]
+	path = 3rdParty/bimg
+	url = git@github.com:bkaradzic/bimg.git
+[submodule "3rdParty/bgfx.cmake"]
+	path = 3rdParty/bgfx.cmake
+	url = git@github.com:bkaradzic/bgfx.cmake.git
+[submodule "3rdParty/SDL"]
+	path = 3rdParty/SDL
+	url = git@github.com:libsdl-org/SDL.git
+[submodule "3rdParty/flecs"]
+	path = 3rdParty/flecs
+	url = git@github.com:SanderMertens/flecs.git

@@ -2,6 +2,7 @@
 #include <bgfx/bgfx.h>
 
 #include "core/update.h"
+#include "core/world.h"
 
 bool eath::mainloop()
 {
@@ -17,6 +18,8 @@ bool eath::mainloop()
     //User requests quit
     quit |= e.type == SDL_EVENT_QUIT;
   }
+
+  world_progress();
 
   bgfx::frame();
   return !quit;

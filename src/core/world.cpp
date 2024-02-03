@@ -1,0 +1,33 @@
+#include "core/world.h"
+#include "gfx/primitives.h"
+#include "gfx/rendering.h"
+
+static flecs::world* ecs = nullptr;
+
+void eath::create_world()
+{
+  ecs = new flecs::world();
+}
+
+void eath::register_systems()
+{
+  register_primitives(*ecs);
+  register_rendering(*ecs);
+}
+
+void eath::shutdown_world()
+{
+  delete ecs;
+}
+
+flecs::world& eath::get_world()
+{
+  return *ecs;
+}
+
+void eath::world_progress()
+{
+  if (ecs) // We can have engine without world at all, so we need to be defensive here
+    ecs->progress();
+}
+

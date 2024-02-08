@@ -21,6 +21,7 @@ Further:
 * Textures
 * Shaders
 * Camera/viewport
+    + Some work is done! Camera view matrix is working and matrices are being transformed correctly!
 * Screen clear
 * Skybox
 * Input

@@ -26,6 +26,9 @@
 *.a
 *.lib
 
+# Compiled shader binaries
+*.bin
+
 # Executables
 *.exe
 *.out

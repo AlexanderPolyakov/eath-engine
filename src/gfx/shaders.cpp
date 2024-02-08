@@ -2,6 +2,7 @@
 #include <bgfx/bgfx.h>
 #include <bx/readerwriter.h>
 #include <bx/debug.h>
+#include <bx/file.h>
 
 
 // TODO: Isolate and move somewhere it belongs
@@ -83,5 +84,28 @@ static bgfx::ShaderHandle loadShader(bx::FileReaderI* _reader, const char* _name
 
 void eath::register_shaders(flecs::world& ecs)
 {
+  ecs.observer<const ShaderName>()
+    .event(flecs::OnSet)
+    .each([&](flecs::entity eid, const ShaderName& shName)
+        {
+          bx::FileReader fr;
+          bgfx::ShaderHandle sh = loadShader(&fr, shName.shaderPath.c_str());
+          eid.set(sh);
+        });
+
+  ecs.observer<const ShaderProgram>()
+    .event(flecs::OnSet)
+    .each([&](flecs::entity eid, const ShaderProgram& program)
+        {
+          program.vertex.get([&](const bgfx::ShaderHandle& vsh)
+          {
+            program.fragment.get([&](const bgfx::ShaderHandle& fsh)
+            {
+              printf("creating handle from %d %d\n", vsh, fsh);
+              bgfx::ProgramHandle ph = bgfx::createProgram(vsh, fsh, true);
+              eid.set(ph);
+            });
+          });
+        });
 }
 

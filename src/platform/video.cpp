@@ -65,8 +65,8 @@ eath::WindowHandle eath::init_window(int width, int height, int flags)
   }
 
   bgfx::setViewClear(
-      0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x6495EDFF, 1.0f, 0);
-  bgfx::setViewRect(0, 0, 0, width, height);
+      0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x222222FF, 1.0f, 0);
+  bgfx::setViewRect(0, 0, 0, ww, hh);
 
   return true;
 }

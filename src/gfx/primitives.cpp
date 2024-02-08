@@ -9,32 +9,49 @@
 
 static float bool_to_sign(bool sign) { return sign ? 1.f : -1.f; }
 
+struct PosColorVertex
+{
+    float x;
+    float y;
+    float z;
+    uint32_t abgr;
+};
+
 void eath::register_primitives(flecs::world& ecs)
 {
-  bgfx::VertexLayout posVtxLayout;
+  static bgfx::VertexLayout posVtxLayout;
   posVtxLayout.begin()
     .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
     .end();
 
-  int boxIndices[] =
-  {
-    0, 4, 6, 0, 6, 2,
-    1, 5, 4, 1, 4, 0,
-    3, 7, 5, 3, 5, 1,
-    2, 6, 7, 2, 7, 3,
-    5, 7, 6, 5, 6, 4,
-    1, 0, 2, 1, 2, 3
-  };
+  static bgfx::VertexLayout posColVtxLayout;
+  posColVtxLayout.begin()
+    .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+    .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+    .end();
 
   ecs.observer<const Box>()
     .event(flecs::OnSet)
     .each([&](flecs::entity eid, const Box& box)
         {
-          VtxPos vertices[8];
+          constexpr uint16_t boxIndices[] =
+          {
+            0, 4, 6, 0, 6, 2,
+            1, 5, 4, 1, 4, 0,
+            3, 7, 5, 3, 5, 1,
+            2, 6, 7, 2, 7, 3,
+            5, 7, 6, 5, 6, 4,
+            1, 0, 2, 1, 2, 3
+          };
+          VtxPosCol vertices[8];
           for (size_t i = 0; i < 8; ++i)
           {
             bx::Vec3 signs{bool_to_sign(i & 1), bool_to_sign(i & 2), bool_to_sign(i & 4)};
-            vertices[i].pos = mul(box.halfExtents, signs);
+            bx::Vec3 pos = mul(box.halfExtents, signs);
+            vertices[i].x = pos.x;
+            vertices[i].y = pos.y;
+            vertices[i].z = pos.z;
+            vertices[i].argb = 0xffffffff;
           }
           //
           //   1---0
@@ -49,9 +66,14 @@ void eath::register_primitives(flecs::world& ecs)
           // |/
           // +----> x
           //
+          bgfx::VertexLayout posColVtxLayout;
+          posColVtxLayout.begin()
+            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+            .end();
 
-          bgfx::VertexBufferHandle vbh = bgfx::createVertexBuffer(bgfx::copy(vertices, sizeof(vertices)), posVtxLayout);
-          bgfx::IndexBufferHandle ibh = bgfx::createIndexBuffer(bgfx::makeRef(boxIndices, sizeof(boxIndices)));
+          bgfx::VertexBufferHandle vbh = bgfx::createVertexBuffer(bgfx::copy(vertices, sizeof(vertices)), posColVtxLayout);
+          bgfx::IndexBufferHandle ibh = bgfx::createIndexBuffer(bgfx::copy(boxIndices, sizeof(boxIndices)));
           eid.set(BufferHandles{vbh, ibh});
         });
 }

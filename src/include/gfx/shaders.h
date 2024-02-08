@@ -11,8 +11,8 @@ namespace eath
   };
   struct ShaderProgram
   {
-    flecs::entity_t vertex;
-    flecs::entity_t fragment;
+    flecs::entity vertex;
+    flecs::entity fragment;
   };
   void register_shaders(flecs::world& ecs);
 };

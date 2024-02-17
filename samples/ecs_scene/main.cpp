@@ -6,7 +6,54 @@
 #include "gfx/primitives.h"
 #include "gfx/shaders.h"
 #include "gfx/view.h"
+#include "core/flecs_helpers.h"
 
+#include <SDL3/SDL.h>
+
+// TODO: codegen it, there's no place for something like this here!
+struct QueryMouseMotion
+{
+  static ecs_query_t* q;
+
+  QueryMouseMotion(ecs_world_t* ecs)
+  {
+    q = eath::build_query(ecs, "[in] mouse_motion");
+  }
+  template<typename Callable>
+  static void execute(ecs_world_t* ecs, Callable c)
+  {
+    ecs_iter_t it = ecs_query_iter(ecs, q);
+    while (ecs_query_next(&it))
+    {
+      const SDL_MouseMotionEvent* mouse_motion = ecs_field(&it, SDL_MouseMotionEvent, 1);
+      for (int i = 0; i < it.count; ++i)
+        c(mouse_motion[i]);
+    }
+  }
+};
+
+ecs_query_t* QueryMouseMotion::q = nullptr;
+
+static void control_camera(ecs_world_t* ecs, bx::Vec3& camera_position, bx::Vec3& camera_ypr)
+{
+  QueryMouseMotion::execute(ecs, [&](const SDL_MouseMotionEvent& mouse_motion)
+    {
+      camera_ypr.x += mouse_motion.xrel * 0.01;
+      camera_ypr.y += mouse_motion.yrel * 0.01;
+      const bx::Vec3 dir = {cosf(camera_ypr.x + bx::kPi * 0.5f) * cosf(camera_ypr.y),
+                            sinf(camera_ypr.y),
+                            sinf(camera_ypr.x + bx::kPi * 0.5f) * cosf(camera_ypr.y)};
+      camera_position = mul(dir, -15.f);
+    });
+}
+
+static void control_camera(ecs_iter_t* it)
+{
+  bx::Vec3* camera_position = ecs_field(it, bx::Vec3, 1);
+  bx::Vec3* camera_ypr = ecs_field(it, bx::Vec3, 2);
+  for (int i = 0; i < it->count; ++i)
+    control_camera(it->real_world, camera_position[i], camera_ypr[i]);
+}
 
 int main(int argc, const char** argv)
 {
@@ -32,12 +79,15 @@ int main(int argc, const char** argv)
     .set(eath::Box{bx::Vec3{1, 2, 3}})
     .set(eath::ShaderProgram{vseid, fseid});
 
-  flecs::entity cameraView = ecs.entity()
-    .set(eath::CameraPosition{{0, 0, -15}})
-    .set(eath::CameraYPR{{0, 0, 0}})
-    .set(eath::CameraMatrix{})
-    .set(eath::ViewMatrix{})
-    .set(eath::ProjMatrix{});
+  flecs::entity cameraView = ecs.entity();
+  ecs_set_named(ecs, cameraView, camera_position, bx::Vec3, {0, 0, -15});
+  ecs_set_named(ecs, cameraView, camera_ypr, bx::Vec3, {0, 0, 0});
+  ecs_set_named(ecs, cameraView, camera_matrix, eath::Mat4x4, {});
+  ecs_set_named(ecs, cameraView, view_matrix, eath::Mat4x4, {});
+  ecs_set_named(ecs, cameraView, proj_matrix, eath::Mat4x4, {});
+
+  QueryMouseMotion q(ecs.c_ptr());
+  ECS_SYSTEM(ecs, control_camera, EcsOnUpdate, [in] camera_position, [in] camera_ypr);
 
   while (eath::mainloop())
   {

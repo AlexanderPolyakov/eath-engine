@@ -1,30 +1,9 @@
 #pragma once
-#include <bx/math.h>
+#include "math/matrix.h"
 
-namespace eath
-{
-  struct CameraPosition
-  {
-    bx::Vec3 pos;
-  };
+extern ECS_COMPONENT_DECLARE(camera_position);
+extern ECS_COMPONENT_DECLARE(camera_ypr);
+extern ECS_COMPONENT_DECLARE(camera_matrix);
+extern ECS_COMPONENT_DECLARE(view_matrix);
+extern ECS_COMPONENT_DECLARE(proj_matrix);
 
-  struct CameraYPR
-  {
-    bx::Vec3 ypr;
-  };
-
-  struct CameraMatrix
-  {
-    float m[16];
-  };
-
-  struct ViewMatrix
-  {
-    float m[16];
-  };
-
-  struct ProjMatrix
-  {
-    float m[16];
-  };
-};

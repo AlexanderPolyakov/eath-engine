@@ -101,7 +101,6 @@ void eath::register_shaders(flecs::world& ecs)
           {
             program.fragment.get([&](const bgfx::ShaderHandle& fsh)
             {
-              printf("creating handle from %d %d\n", vsh, fsh);
               bgfx::ProgramHandle ph = bgfx::createProgram(vsh, fsh, true);
               eid.set(ph);
             });

@@ -1,10 +1,16 @@
 #pragma once
 
+#define ecs_cset_named(world, entity, name, comp)\
+    ecs_set_id((flecs::world_t*)world, entity, ecs_id(name), sizeof(comp), &comp);
+
 #define ecs_set_named(world, entity, name, type, ...)\
   {\
     type&& temp = __VA_ARGS__;\
-    ecs_set_id((flecs::world_t*)world, entity.id(), ecs_id(name), sizeof(type), &temp);\
+    ecs_set_id((flecs::world_t*)world, entity, ecs_id(name), sizeof(type), &temp);\
   }
+
+#define ecs_get_named(world, entity, name, type)\
+  (ECS_CAST(const type*, ecs_get_id(world, entity, ecs_id(name))))
 
 #define ecs_set_named_singleton(world, name, type, ...)\
   {\
@@ -13,7 +19,7 @@
   }
 
 #define ecs_cset_named_singleton(world, name, comp)\
-  ecs_set_id((flecs::world_t*)world, ecs_id(name), ecs_id(name), sizeof(comp), &comp);\
+  ecs_set_id((flecs::world_t*)world, ecs_id(name), ecs_id(name), sizeof(comp), &comp)
 
 //flecs::set<type>((flecs::world_t*)&world, entity.id(), __VA_ARGS__, ecs_id(name))
 

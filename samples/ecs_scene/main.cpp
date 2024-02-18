@@ -38,11 +38,11 @@ static void control_camera(ecs_world_t* ecs, bx::Vec3& camera_position, bx::Vec3
 {
   QueryMouseMotion::execute(ecs, [&](const SDL_MouseMotionEvent& mouse_motion)
     {
-      camera_ypr.x += mouse_motion.xrel * 0.01;
-      camera_ypr.y += mouse_motion.yrel * 0.01;
-      const bx::Vec3 dir = {cosf(camera_ypr.x + bx::kPi * 0.5f) * cosf(camera_ypr.y),
+      camera_ypr.x -= mouse_motion.xrel * 0.01;
+      camera_ypr.y -= mouse_motion.yrel * 0.01;
+      const bx::Vec3 dir = {cosf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y),
                             sinf(camera_ypr.y),
-                            sinf(camera_ypr.x + bx::kPi * 0.5f) * cosf(camera_ypr.y)};
+                            sinf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y)};
       camera_position = mul(dir, -15.f);
     });
 }
@@ -71,15 +71,17 @@ int main(int argc, const char** argv)
 
   flecs::world& ecs = eath::get_world();
 
-  flecs::entity vseid = ecs.entity().set(eath::ShaderName{"simple_vs"});
-  flecs::entity fseid = ecs.entity().set(eath::ShaderName{"simple_fs"});
-  //flecs::entity progeid = ecs.entity().set(ShaderProgram{vseid, fseid});
+  ecs_entity_t vseid = ecs_new(ecs, 0);
+  ecs_set_named(ecs, vseid, shaders__path, std::string, "simple_vs");
+  ecs_entity_t fseid = ecs_new(ecs, 0);
+  ecs_set_named(ecs, fseid, shaders__path, std::string, "simple_fs");
 
-  flecs::entity box = ecs.entity()
-    .set(eath::Box{bx::Vec3{1, 2, 3}})
-    .set(eath::ShaderProgram{vseid, fseid});
+  ecs_entity_t box = ecs_new(ecs, 0);
+  ecs_cset_named(ecs, box, shaders__vertex_shader, vseid);
+  ecs_cset_named(ecs, box, shaders__fragment_shader, fseid);
+  ecs_set_named(ecs, box, box__half_extents, bx::Vec3, {1, 2, 3});
 
-  flecs::entity cameraView = ecs.entity();
+  ecs_entity_t cameraView = ecs_new(ecs, 0);
   ecs_set_named(ecs, cameraView, camera_position, bx::Vec3, {0, 0, -15});
   ecs_set_named(ecs, cameraView, camera_ypr, bx::Vec3, {0, 0, 0});
   ecs_set_named(ecs, cameraView, camera_matrix, eath::Mat4x4, {});

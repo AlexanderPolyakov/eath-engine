@@ -25,6 +25,9 @@ Further:
 * Screen clear
 * Skybox
 * Input
+    + Mouse motion
+    * Mouse clicks
+    * Keyboard state
 * Meshes
 
 ## UI/2D render

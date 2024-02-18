@@ -33,6 +33,16 @@ static void set_view_transform(const eath::Mat4x4& view, const eath::Mat4x4& pro
   bgfx::setViewTransform(0, view.m, proj.m);
 }
 
+static void render_geometry(const bgfx::VertexBufferHandle& vertex_buffer_handle, const bgfx::IndexBufferHandle& index_buffer_handle,
+                            const bgfx::ProgramHandle& shaders__program_handle)
+{
+  bgfx::setVertexBuffer(0, vertex_buffer_handle);
+  bgfx::setIndexBuffer(index_buffer_handle);
+
+  bgfx::submit(0, shaders__program_handle);
+}
+
+
 // TODO: this should be in a codegen or macro!
 static void cam_matrix_from_pos_ypr(ecs_iter_t* it)
 {
@@ -66,6 +76,15 @@ static void set_view_transform(ecs_iter_t* it)
     set_view_transform(vm[i], proj[i]);
 }
 
+static void render_geometry(ecs_iter_t* it)
+{
+  const bgfx::VertexBufferHandle* vertex_buffer_handle = ecs_field(it, bgfx::VertexBufferHandle, 1);
+  const bgfx::IndexBufferHandle* index_buffer_handle = ecs_field(it, bgfx::IndexBufferHandle, 2);
+  const bgfx::ProgramHandle* shaders__program_handle = ecs_field(it, bgfx::ProgramHandle, 3);
+  for (int i = 0; i < it->count; ++i)
+    render_geometry(vertex_buffer_handle[i], index_buffer_handle[i], shaders__program_handle[i]);
+}
+
 
 void eath::register_rendering(flecs::world& ecs)
 {
@@ -80,13 +99,6 @@ void eath::register_rendering(flecs::world& ecs)
   ECS_SYSTEM(ecs, set_proj_matrix, EcsOnUpdate, proj_matrix);
   ECS_SYSTEM(ecs, set_view_transform, EcsOnUpdate, [in] view_matrix, [in] proj_matrix);
 
-  ecs.system<BufferHandles, bgfx::ProgramHandle>()
-    .each([](BufferHandles buffer, bgfx::ProgramHandle program)
-    {
-      bgfx::setVertexBuffer(0, buffer.vbh);
-      bgfx::setIndexBuffer(buffer.ibh);
-
-      bgfx::submit(0, program);
-    });
+  ECS_SYSTEM(ecs, render_geometry, EcsOnUpdate, [in] vertex_buffer_handle, [in] index_buffer_handle, [in] shaders__program_handle);
 }
 

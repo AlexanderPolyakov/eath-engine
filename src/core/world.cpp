@@ -2,6 +2,7 @@
 #include "gfx/primitives.h"
 #include "gfx/rendering.h"
 #include "gfx/shaders.h"
+#include "gfx/buffer.h"
 #include "core/input.h"
 
 static flecs::world* ecs = nullptr;
@@ -13,6 +14,7 @@ void eath::create_world()
 
 void eath::register_systems()
 {
+  register_buffers(*ecs);
   register_input(*ecs);
   register_primitives(*ecs);
   register_shaders(*ecs);

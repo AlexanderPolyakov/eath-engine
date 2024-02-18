@@ -2,12 +2,11 @@
 
 #include <bgfx/bgfx.h>
 
+extern ECS_COMPONENT_DECLARE(vertex_buffer_handle);
+extern ECS_COMPONENT_DECLARE(index_buffer_handle);
+
 namespace eath
 {
-  struct BufferHandles
-  {
-    bgfx::VertexBufferHandle vbh;
-    bgfx::IndexBufferHandle ibh;
-  };
+  void register_buffers(flecs::world& ecs);
 };
 

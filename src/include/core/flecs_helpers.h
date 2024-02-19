@@ -12,6 +12,9 @@
 #define ecs_get_named(world, entity, name, type)\
   (ECS_CAST(const type*, ecs_get_id(world, entity, ecs_id(name))))
 
+#define ecs_get_mut_named(world, entity, name, type)\
+  (ECS_CAST(type*, ecs_get_mut_id(world, entity, ecs_id(name))))
+
 #define ecs_set_named_singleton(world, name, type, ...)\
   {\
     type&& temp = __VA_ARGS__;\
@@ -20,6 +23,12 @@
 
 #define ecs_cset_named_singleton(world, name, comp)\
   ecs_set_id((flecs::world_t*)world, ecs_id(name), ecs_id(name), sizeof(comp), &comp)
+
+#define ecs_get_named_singleton(world, name, type)\
+  ecs_get_named(world, ecs_id(name), name, type)
+
+#define ecs_get_mut_named_singleton(world, name, type)\
+  ecs_get_mut_named(world, ecs_id(name), name, type)
 
 //flecs::set<type>((flecs::world_t*)&world, entity.id(), __VA_ARGS__, ecs_id(name))
 

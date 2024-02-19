@@ -1,7 +1,5 @@
 #pragma once
 
-#include <bgfx/bgfx.h>
-
 extern ECS_COMPONENT_DECLARE(vertex_buffer_handle);
 extern ECS_COMPONENT_DECLARE(index_buffer_handle);
 

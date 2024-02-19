@@ -1,3 +1,4 @@
+#include <bgfx/bgfx.h>
 #include "gfx/primitives.h"
 #include "gfx/vertex_format.h"
 #include "gfx/buffer.h"

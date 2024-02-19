@@ -2,6 +2,7 @@
 #include "core/update.h"
 #include "core/shutdown.h"
 #include "core/world.h"
+#include "core/input.h"
 #include "platform/video.h"
 #include "gfx/primitives.h"
 #include "gfx/shaders.h"
@@ -34,17 +35,27 @@ struct QueryMouseMotion
 
 ecs_query_t* QueryMouseMotion::q = nullptr;
 
-static void control_camera(ecs_world_t* ecs, bx::Vec3& camera_position, bx::Vec3& camera_ypr)
+static void control_camera(float dt, ecs_world_t* ecs, bx::Vec3& camera_position, bx::Vec3& camera_ypr)
 {
   QueryMouseMotion::execute(ecs, [&](const SDL_MouseMotionEvent& mouse_motion)
     {
       camera_ypr.x -= mouse_motion.xrel * 0.01;
       camera_ypr.y -= mouse_motion.yrel * 0.01;
-      const bx::Vec3 dir = {cosf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y),
-                            sinf(camera_ypr.y),
-                            sinf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y)};
-      camera_position = mul(dir, -15.f);
     });
+  const eath::KeyboardState* ks = ecs_get_named_singleton(ecs, keyboard_state, eath::KeyboardState);
+
+  // Query should fix this actually, but queries are more cumbersome at this time to use
+  if (ks)
+  {
+    // dt!
+    camera_ypr.x += (ks->curState[SDL_SCANCODE_A] - ks->curState[SDL_SCANCODE_D]) * dt;
+    camera_ypr.y += (ks->curState[SDL_SCANCODE_W] - ks->curState[SDL_SCANCODE_S]) * dt;
+  }
+
+  const bx::Vec3 dir = {cosf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y),
+                        sinf(camera_ypr.y),
+                        sinf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y)};
+  camera_position = mul(dir, -15.f);
 }
 
 static void control_camera(ecs_iter_t* it)
@@ -52,7 +63,7 @@ static void control_camera(ecs_iter_t* it)
   bx::Vec3* camera_position = ecs_field(it, bx::Vec3, 1);
   bx::Vec3* camera_ypr = ecs_field(it, bx::Vec3, 2);
   for (int i = 0; i < it->count; ++i)
-    control_camera(it->real_world, camera_position[i], camera_ypr[i]);
+    control_camera(it->delta_time, it->real_world, camera_position[i], camera_ypr[i]);
 }
 
 int main(int argc, const char** argv)

@@ -1,4 +1,5 @@
 #include <flecs.h>
+#include <bgfx/bgfx.h>
 #include "core/flecs_helpers.h"
 #include "gfx/buffer.h"
 

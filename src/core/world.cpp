@@ -3,6 +3,7 @@
 #include "gfx/rendering.h"
 #include "gfx/shaders.h"
 #include "gfx/buffer.h"
+#include "gfx/view.h"
 #include "core/input.h"
 
 static flecs::world* ecs = nullptr;
@@ -18,6 +19,7 @@ void eath::register_systems()
   register_input(*ecs);
   register_primitives(*ecs);
   register_shaders(*ecs);
+  register_view(*ecs);
   register_rendering(*ecs);
 }
 

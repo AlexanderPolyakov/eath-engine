@@ -20,6 +20,10 @@ all functionality of the game should be specified in data and scripts/systems. W
 still be able to compile their own shaders and systems, but all the heavy loading of glueing it all
 together should be done by the engine.
 
+## Platforms
+In principle it should work on any platform `bgfx` and `SDL` works, but currently only macOS is being
+actively developed on with Windows and Emscripten versions following soon (target of middle of March 2024).
+
 ## Dependencies
 Eath Engine is built upon a set of open source libraries:
 * `bgfx` - rendering

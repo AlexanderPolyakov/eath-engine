@@ -5,9 +5,16 @@
 #include "gfx/view.h"
 #include "core/flecs_helpers.h"
 
-static void render_geometry(const bgfx::VertexBufferHandle& vertex_buffer_handle, const bgfx::IndexBufferHandle& index_buffer_handle,
+ECS_COMPONENT_DECLARE(transform);
+
+
+static void render_geometry(const eath::Mat4x4& transform,
+                            const bgfx::VertexBufferHandle& vertex_buffer_handle,
+                            const bgfx::IndexBufferHandle& index_buffer_handle,
                             const bgfx::ProgramHandle& shaders__program_handle)
 {
+  bgfx::setTransform(transform.m);
+
   bgfx::setVertexBuffer(0, vertex_buffer_handle);
   bgfx::setIndexBuffer(index_buffer_handle);
 
@@ -16,16 +23,19 @@ static void render_geometry(const bgfx::VertexBufferHandle& vertex_buffer_handle
 
 static void render_geometry(ecs_iter_t* it)
 {
-  const bgfx::VertexBufferHandle* vertex_buffer_handle = ecs_field(it, bgfx::VertexBufferHandle, 1);
-  const bgfx::IndexBufferHandle* index_buffer_handle = ecs_field(it, bgfx::IndexBufferHandle, 2);
-  const bgfx::ProgramHandle* shaders__program_handle = ecs_field(it, bgfx::ProgramHandle, 3);
+  const eath::Mat4x4* transform = ecs_field(it, eath::Mat4x4, 1);
+  const bgfx::VertexBufferHandle* vertex_buffer_handle = ecs_field(it, bgfx::VertexBufferHandle, 2);
+  const bgfx::IndexBufferHandle* index_buffer_handle = ecs_field(it, bgfx::IndexBufferHandle, 3);
+  const bgfx::ProgramHandle* shaders__program_handle = ecs_field(it, bgfx::ProgramHandle, 4);
   for (int i = 0; i < it->count; ++i)
-    render_geometry(vertex_buffer_handle[i], index_buffer_handle[i], shaders__program_handle[i]);
+    render_geometry(transform[i], vertex_buffer_handle[i], index_buffer_handle[i], shaders__program_handle[i]);
 }
 
 
 void eath::register_rendering(flecs::world& ecs)
 {
-  ECS_SYSTEM(ecs, render_geometry, EcsOnUpdate, [in] vertex_buffer_handle, [in] index_buffer_handle, [in] shaders__program_handle);
+  ecs_component_named(ecs, transform, eath::Mat4x4);
+
+  ECS_SYSTEM(ecs, render_geometry, EcsOnUpdate, [in] transform, [in] vertex_buffer_handle, [in] index_buffer_handle, [in] shaders__program_handle);
 }
 

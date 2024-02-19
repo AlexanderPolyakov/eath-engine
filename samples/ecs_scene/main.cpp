@@ -7,6 +7,7 @@
 #include "gfx/primitives.h"
 #include "gfx/shaders.h"
 #include "gfx/view.h"
+#include "gfx/rendering.h"
 #include "core/flecs_helpers.h"
 
 #include <SDL3/SDL.h>
@@ -42,20 +43,23 @@ static void control_camera(float dt, ecs_world_t* ecs, bx::Vec3& camera_position
       camera_ypr.x -= mouse_motion.xrel * 0.01;
       camera_ypr.y -= mouse_motion.yrel * 0.01;
     });
-  const eath::KeyboardState* ks = ecs_get_named_singleton(ecs, keyboard_state, eath::KeyboardState);
-
-  // Query should fix this actually, but queries are more cumbersome at this time to use
-  if (ks)
-  {
-    // dt!
-    camera_ypr.x += (ks->curState[SDL_SCANCODE_A] - ks->curState[SDL_SCANCODE_D]) * dt;
-    camera_ypr.y += (ks->curState[SDL_SCANCODE_W] - ks->curState[SDL_SCANCODE_S]) * dt;
-  }
 
   const bx::Vec3 dir = {cosf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y),
                         sinf(camera_ypr.y),
                         sinf(camera_ypr.x + bx::kPiHalf) * cosf(camera_ypr.y)};
   camera_position = mul(dir, -15.f);
+}
+
+static void control_box(float dt, ecs_world_t* ecs, eath::Mat4x4& transform)
+{
+  const eath::KeyboardState* ks = ecs_get_named_singleton(ecs, keyboard_state, eath::KeyboardState);
+
+  // Query should fix this actually, but queries are more cumbersome at this time to use
+  if (ks)
+  {
+    transform.rc[3][0] += (ks->curState[SDL_SCANCODE_D] - ks->curState[SDL_SCANCODE_A]) * dt * 5.f;
+    transform.rc[3][1] += (ks->curState[SDL_SCANCODE_W] - ks->curState[SDL_SCANCODE_S]) * dt * 5.f;
+  }
 }
 
 static void control_camera(ecs_iter_t* it)
@@ -64,6 +68,13 @@ static void control_camera(ecs_iter_t* it)
   bx::Vec3* camera_ypr = ecs_field(it, bx::Vec3, 2);
   for (int i = 0; i < it->count; ++i)
     control_camera(it->delta_time, it->real_world, camera_position[i], camera_ypr[i]);
+}
+
+static void control_box(ecs_iter_t* it)
+{
+  eath::Mat4x4* transform = ecs_field(it, eath::Mat4x4, 1);
+  for (int i = 0; i < it->count; ++i)
+    control_box(it->delta_time, it->world, transform[i]);
 }
 
 int main(int argc, const char** argv)
@@ -91,6 +102,7 @@ int main(int argc, const char** argv)
   ecs_cset_named(ecs, box, shaders__vertex_shader, vseid);
   ecs_cset_named(ecs, box, shaders__fragment_shader, fseid);
   ecs_set_named(ecs, box, box__half_extents, bx::Vec3, {1, 2, 3});
+  ecs_set_named(ecs, box, transform, eath::Mat4x4, eath::mtx_ident());
 
   ecs_entity_t cameraView = ecs_new(ecs, 0);
   ecs_set_named(ecs, cameraView, camera_position, bx::Vec3, {0, 0, -15});
@@ -101,6 +113,8 @@ int main(int argc, const char** argv)
 
   QueryMouseMotion q(ecs.c_ptr());
   ECS_SYSTEM(ecs, control_camera, EcsOnUpdate, [in] camera_position, [in] camera_ypr);
+
+  ECS_SYSTEM(ecs, control_box, EcsOnUpdate, transform);
 
   while (eath::mainloop())
   {

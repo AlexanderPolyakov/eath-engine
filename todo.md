@@ -3,11 +3,11 @@ All below **must** be ECS driven in creation and mutation. This is THE design go
 to abstract everything via ECS, eventually even abstracting internal engine-level stuff like resources, windows, input etc.
 
 Some prereq discovered:
-* For primitives and rendering
-    * Programs
-        * Shaders
-            * Reading files!
-            * Shader compiler
++ For primitives and rendering
+    + Programs
+        + Shaders
+            + Reading files!
+            + Shader compiler
     + Vertex/Index Buffers
 
 Further:
@@ -19,15 +19,24 @@ Further:
     * Capsules
     * Lines
 * Textures
+    * Load texture to specified format
+    * Texture handles
+    * Texture uniforms
+    * UV on geometry
 * Shaders
+    + Simple non-lit color shader
+    * Textured shader
+    * Lit textured
+        * Requires a way to find out all lights for a specified buffer
+    * Lit textured shadowed
 * Camera/viewport
     + Some work is done! Camera view matrix is working and matrices are being transformed correctly!
 * Screen clear
 * Skybox
 * Input
     + Mouse motion
-    * Mouse clicks
     + Keyboard state
+    * Mouse clicks
 * Meshes
 
 ## UI/2D render

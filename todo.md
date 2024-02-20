@@ -4,11 +4,11 @@ to abstract everything via ECS, eventually even abstracting internal engine-leve
 
 Some prereq discovered:
 - [x] For primitives and rendering
-   - [x] Programs
-       - [x] Shaders
-           - [x] Reading files!
-           - [x] Shader compiler
-   - [x] Vertex/Index Buffers
+  - [x] Programs
+    - [x] Shaders
+      - [x] Reading files!
+      - [x] Shader compiler
+  - [x] Vertex/Index Buffers
 
 Further:
 

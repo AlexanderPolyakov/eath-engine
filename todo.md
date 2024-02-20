@@ -3,12 +3,12 @@ All below **must** be ECS driven in creation and mutation. This is THE design go
 to abstract everything via ECS, eventually even abstracting internal engine-level stuff like resources, windows, input etc.
 
 Some prereq discovered:
-+ For primitives and rendering
-    + Programs
-        + Shaders
-            + Reading files!
-            + Shader compiler
-    + Vertex/Index Buffers
+[x] For primitives and rendering
+    [x] Programs
+        [x] Shaders
+            [x] Reading files!
+            [x] Shader compiler
+    [x] Vertex/Index Buffers
 
 Further:
 

@@ -130,7 +130,7 @@ static void on_shader_program_set(ecs_iter_t* it)
     on_shader_program_set(it->world, it->entities[i], shaders__vertex_shader[i], shaders__fragment_shader[i]);
 }
 
-void eath::register_shaders(flecs::world& ecs)
+void eath::register_shaders(ecs_world_t* ecs)
 {
   ecs_component_named(ecs, shaders__path, std::string);
   ecs_component_named(ecs, shaders__vertex_shader, ecs_entity_t);

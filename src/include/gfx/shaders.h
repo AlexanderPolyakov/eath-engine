@@ -16,6 +16,6 @@ namespace eath
     flecs::entity vertex;
     flecs::entity fragment;
   };
-  void register_shaders(flecs::world& ecs);
+  void register_shaders(ecs_world_t* ecs);
 };
 

@@ -7,6 +7,6 @@ extern ECS_COMPONENT_DECLARE(box__half_extents);
 
 namespace eath
 {
-  void register_primitives(flecs::world& ecs);
+  void register_primitives(ecs_world_t* ecs);
 };
 

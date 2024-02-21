@@ -5,6 +5,6 @@ extern ECS_COMPONENT_DECLARE(transform);
 
 namespace eath
 {
-  void register_rendering(flecs::world& ecs);
+  void register_rendering(ecs_world_t* ecs);
 };
 

@@ -73,7 +73,7 @@ ECS_COMPONENT_DECLARE(camera_matrix);
 ECS_COMPONENT_DECLARE(view_matrix);
 ECS_COMPONENT_DECLARE(proj_matrix);
 
-void eath::register_view(flecs::world& ecs)
+void eath::register_view(ecs_world_t* ecs)
 {
   ecs_component_named(ecs, view_matrix, eath::Mat4x4);
   ecs_component_named(ecs, proj_matrix, eath::Mat4x4);

@@ -7,24 +7,24 @@
 ECS_COMPONENT_DECLARE(mouse_motion);
 ECS_COMPONENT_DECLARE(keyboard_state);
 
-void eath::register_input(flecs::world& ecs)
+void eath::register_input(ecs_world_t* ecs)
 {
   ecs_component_named(ecs, mouse_motion, SDL_MouseMotionEvent);
   ecs_component_named(ecs, keyboard_state, KeyboardState);
 
   KeyboardState ks;
   memset(&ks, 0, sizeof(KeyboardState));
-  ecs_cset_named_singleton(ecs.c_ptr(), keyboard_state, ks);
+  ecs_cset_named_singleton(ecs, keyboard_state, ks);
 }
 
 void eath::pre_raw_input()
 {
-  flecs::world& ecs = get_world();
+  ecs_world_t* ecs = get_world();
 
   SDL_MouseMotionEvent zeroMotion = {0};
-  ecs_cset_named_singleton(ecs.c_ptr(), mouse_motion, zeroMotion);
+  ecs_cset_named_singleton(ecs, mouse_motion, zeroMotion);
 
-  KeyboardState* ks = ecs_get_mut_named_singleton(ecs.c_ptr(), keyboard_state, KeyboardState);
+  KeyboardState* ks = ecs_get_mut_named_singleton(ecs, keyboard_state, KeyboardState);
   ks->pressed.reset();
 }
 
@@ -46,15 +46,15 @@ static void on_key(ecs_world_t* ecs, const SDL_Event& e)
 
 bool eath::process_raw_input(const SDL_Event& e)
 {
-  flecs::world& ecs = get_world();
+  ecs_world_t* ecs = get_world();
   switch (e.type)
   {
     case SDL_EVENT_MOUSE_MOTION:
-      ecs_cset_named_singleton(ecs.c_ptr(), mouse_motion, e.motion);
+      ecs_cset_named_singleton(ecs, mouse_motion, e.motion);
       return true;
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
-      on_key(ecs.c_ptr(), e);
+      on_key(ecs, e);
       return true;
   };
 

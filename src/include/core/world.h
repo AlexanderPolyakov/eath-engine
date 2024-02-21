@@ -10,6 +10,6 @@ namespace eath
 
   void world_progress();
 
-  flecs::world& get_world();
+  ecs_world_t* get_world();
 };
 

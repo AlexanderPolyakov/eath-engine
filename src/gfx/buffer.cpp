@@ -7,7 +7,7 @@ ECS_COMPONENT_DECLARE(vertex_buffer_handle);
 ECS_COMPONENT_DECLARE(index_buffer_handle);
 
 
-void eath::register_buffers(flecs::world& ecs)
+void eath::register_buffers(ecs_world_t* ecs)
 {
   ecs_component_named(ecs, vertex_buffer_handle, bgfx::VertexBufferHandle);
   ecs_component_named(ecs, index_buffer_handle, bgfx::IndexBufferHandle);

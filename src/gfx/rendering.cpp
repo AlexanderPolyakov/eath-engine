@@ -32,7 +32,7 @@ static void render_geometry(ecs_iter_t* it)
 }
 
 
-void eath::register_rendering(flecs::world& ecs)
+void eath::register_rendering(ecs_world_t* ecs)
 {
   ecs_component_named(ecs, transform, eath::Mat4x4);
 

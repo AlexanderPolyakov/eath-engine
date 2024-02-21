@@ -91,7 +91,7 @@ int main(int argc, const char** argv)
     return 1;
   }
 
-  flecs::world& ecs = eath::get_world();
+  ecs_world_t* ecs = eath::get_world();
 
   ecs_entity_t vseid = ecs_new(ecs, 0);
   ecs_set_named(ecs, vseid, shaders__path, std::string, "simple_vs");
@@ -111,7 +111,7 @@ int main(int argc, const char** argv)
   ecs_set_named(ecs, cameraView, view_matrix, eath::Mat4x4, {});
   ecs_set_named(ecs, cameraView, proj_matrix, eath::Mat4x4, {});
 
-  QueryMouseMotion q(ecs.c_ptr());
+  QueryMouseMotion q(ecs);
   ECS_SYSTEM(ecs, control_camera, EcsOnUpdate, [in] camera_position, [in] camera_ypr);
 
   ECS_SYSTEM(ecs, control_box, EcsOnUpdate, transform);

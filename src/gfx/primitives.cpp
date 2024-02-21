@@ -77,7 +77,7 @@ void on_box_prim_set(ecs_iter_t* it)
     on_box_prim_set(it->world, it->entities[i], box__half_extents[i]);
 }
 
-void eath::register_primitives(flecs::world& ecs)
+void eath::register_primitives(ecs_world_t* ecs)
 {
   ecs_component_named(ecs, box__half_extents, bx::Vec3);
 

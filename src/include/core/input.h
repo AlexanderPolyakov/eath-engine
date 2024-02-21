@@ -15,7 +15,7 @@ namespace eath
     std::bitset<SDL_NUM_SCANCODES> pressed;
     std::bitset<SDL_NUM_SCANCODES> released;
   };
-  void register_input(flecs::world& ecs);
+  void register_input(ecs_world_t* ecs);
 
   void pre_raw_input();
   bool process_raw_input(const SDL_Event& e);

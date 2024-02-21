@@ -9,6 +9,6 @@ extern ECS_COMPONENT_DECLARE(proj_matrix);
 
 namespace eath
 {
-  void register_view(flecs::world& ecs);
+  void register_view(ecs_world_t* ecs);
 };
 

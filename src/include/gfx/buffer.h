@@ -5,6 +5,6 @@ extern ECS_COMPONENT_DECLARE(index_buffer_handle);
 
 namespace eath
 {
-  void register_buffers(flecs::world& ecs);
+  void register_buffers(ecs_world_t* ecs);
 };
 

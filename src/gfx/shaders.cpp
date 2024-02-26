@@ -1,59 +1,13 @@
 #include "gfx/shaders.h"
 #include <bgfx/bgfx.h>
-#include <bx/readerwriter.h>
 #include <bx/debug.h>
-#include <bx/file.h>
 #include "core/flecs_helpers.h"
+#include "core/bx_file.h"
 
 
-// TODO: Isolate and move somewhere it belongs
-#define DBG_STRINGIZE(_x) DBG_STRINGIZE_(_x)
-#define DBG_STRINGIZE_(_x) #_x
-#define DBG_FILE_LINE_LITERAL "" __FILE__ "(" DBG_STRINGIZE(__LINE__) "): "
-#define DBG(_format, ...) bx::debugPrintf(DBG_FILE_LINE_LITERAL "" _format "\n", ##__VA_ARGS__)
-
-static const bgfx::Memory* loadMem(bx::FileReaderI* _reader, const char* _filePath)
+static bgfx::ShaderHandle loadShader(const char* _name)
 {
-  if (bx::open(_reader, _filePath) )
-  {
-    uint32_t size = (uint32_t)bx::getSize(_reader);
-    const bgfx::Memory* mem = bgfx::alloc(size+1);
-    bx::read(_reader, mem->data, size, bx::ErrorAssert{});
-    bx::close(_reader);
-    mem->data[mem->size-1] = '\0';
-    return mem;
-  }
-
-  DBG("Failed to load %s.", _filePath);
-  return NULL;
-}
-
-static void* loadMem(bx::FileReaderI* _reader, bx::AllocatorI* _allocator, const char* _filePath, uint32_t* _size)
-{
-  if (bx::open(_reader, _filePath) )
-  {
-    uint32_t size = (uint32_t)bx::getSize(_reader);
-    void* data = bx::alloc(_allocator, size);
-    bx::read(_reader, data, size, bx::ErrorAssert{});
-    bx::close(_reader);
-
-    if (NULL != _size)
-    {
-      *_size = size;
-    }
-    return data;
-  }
-
-  DBG("Failed to load %s.", _filePath);
-  return NULL;
-}
-
-
-static bgfx::ShaderHandle loadShader(bx::FileReaderI* _reader, const char* _name)
-{
-  char filePath[512];
-
-  const char* shaderPath = "???";
+  std::string shaderPath = "???";
 
   switch (bgfx::getRendererType() )
   {
@@ -73,11 +27,10 @@ static bgfx::ShaderHandle loadShader(bx::FileReaderI* _reader, const char* _name
                                          break;
   }
 
-  bx::strCopy(filePath, BX_COUNTOF(filePath), shaderPath);
-  bx::strCat(filePath, BX_COUNTOF(filePath), _name);
-  bx::strCat(filePath, BX_COUNTOF(filePath), ".bin");
+  shaderPath += _name;
+  shaderPath += ".bin";
 
-  bgfx::ShaderHandle handle = bgfx::createShader(loadMem(_reader, filePath) );
+  bgfx::ShaderHandle handle = bgfx::createShader(eath::load_mem(shaderPath.c_str()));
   bgfx::setName(handle, _name);
 
   return handle;
@@ -91,8 +44,7 @@ ECS_COMPONENT_DECLARE(shaders__program_handle);
 
 static void on_shader_path_set(ecs_world_t* ecs, ecs_entity_t e, const std::string& shaders__path)
 {
-  bx::FileReader fr;
-  bgfx::ShaderHandle sh = loadShader(&fr, shaders__path.c_str());
+  bgfx::ShaderHandle sh = loadShader(shaders__path.c_str());
   ecs_cset_named(ecs, e, shaders__handle, sh);
 }
 

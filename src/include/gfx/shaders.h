@@ -8,6 +8,8 @@ extern ECS_COMPONENT_DECLARE(shaders__vertex_shader);
 extern ECS_COMPONENT_DECLARE(shaders__fragment_shader);
 extern ECS_COMPONENT_DECLARE(shaders__handle);
 extern ECS_COMPONENT_DECLARE(shaders__program_handle);
+extern ECS_COMPONENT_DECLARE(shaders__uniform_handle);
+
 
 namespace eath
 {
